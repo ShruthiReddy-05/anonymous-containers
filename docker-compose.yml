@@ -1,0 +1,48 @@
+x-peer-common: &peer-common
+  build: ./chat_peer
+  stdin_open: true
+  tty: true
+  depends_on:
+    chat_server:
+      condition: service_healthy
+  networks:
+    - chat_net
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+x-peer-env: &peer-env
+  CHAT_SERVER_URL: ws://chat_server:5000/ws
+  TTL_SECONDS: 170
+
+services:
+  chat_server:
+    build: ./chat_server
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:5000/health || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 12
+      start_period: 5s
+    expose:
+      - "5000"
+    networks:
+      - chat_net
+
+  chat_peer_alice:
+    <<: *peer-common
+    container_name: chat_peer_alice
+    environment:
+      <<: *peer-env
+      USERNAME: alice
+
+  chat_peer_bob:
+    <<: *peer-common
+    container_name: chat_peer_bob
+    environment:
+      <<: *peer-env
+      USERNAME: bob
+
+networks:
+  chat_net:
+    driver: bridge
+    internal: true
