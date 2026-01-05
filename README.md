@@ -80,10 +80,4 @@ docker compose run \
 - **Unable to self-destruct**: Confirm `/var/run/docker.sock` is mounted and the Docker daemon is reachable from within the container.
 - **Relay unreachable**: Validate the Docker network is up (`docker network ls | grep chat_net`) and that the server container is healthy.
 
-## Stretch Ideas
-- Add a dashboard service for monitoring active peers and TTLs
-- Support configurable TTL per peer via command-line flag
-- Implement fingerprint verification prompts (PGP-style trust)
-- Add health checks to cull crashed peers automatically
 
-Enjoy experimenting with ephemeral, encrypted container chats!
